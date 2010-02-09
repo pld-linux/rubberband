@@ -4,7 +4,7 @@
 Summary:	An audio time-stretching and pitch-shifting library and utility program
 Name:		rubberband
 Version:	1.4
-Release:	0.1
+Release:	0.2
 License:	GPL v2
 Group:		Applications/Sound
 Source0:	http://www.breakfastquay.com/rubberband/files/%{name}-%{version}p1.tar.bz2
@@ -27,7 +27,6 @@ another.
 Summary:	rubberband library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki rubberband
 Group:		Libraries
-Requires:	%{name} = %{version}-%{release}
 
 %description libs
 rubberband library.
