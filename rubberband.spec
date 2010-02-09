@@ -100,7 +100,7 @@ rm -rf $RPM_BUILD_ROOT
 %files libs
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/librubberband.so.*.*.*
-%attr(755,root,root) %ghost %attr(755,root,root) %{_libdir}/librubberband.so.2
+%attr(755,root,root) %ghost %{_libdir}/librubberband.so.2
 
 %files devel
 %defattr(644,root,root,755)
