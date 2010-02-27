@@ -12,7 +12,9 @@ Source0:	http://www.breakfastquay.com/rubberband/files/%{name}-%{version}p1.tar.
 URL:		http://www.breakfastquay.com/rubberband/
 BuildRequires:	fftw3-devel
 BuildRequires:	ladspa-devel
+BuildRequires:	libsamplerate-devel
 BuildRequires:	libsndfile-devel
+BuildRequires:	libstdc++-devel
 BuildRequires:	pkg-config
 BuildRequires:	vamp-devel
 Requires:	%{name}-libs = %{version}-%{release}
@@ -77,13 +79,20 @@ rubberband vamp plugin.
 
 %build
 %configure
-%{__make}
+%{__make} \
+	INSTALL_LIBDIR="%{_libdir}" \
+	INSTALL_VAMPDIR="%{_libdir}/vamp" \
+	INSTALL_LADSPADIR="%{_libdir}/ladspa"
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
 %{__make} install \
-	DESTDIR=$RPM_BUILD_ROOT
+	DESTDIR=$RPM_BUILD_ROOT \
+	INSTALL_LIBDIR="%{_libdir}" \
+	INSTALL_VAMPDIR="%{_libdir}/vamp" \
+	INSTALL_LADSPADIR="%{_libdir}/ladspa" \
+	INSTALL_PKGDIR="%{_pkgconfigdir}"
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -94,7 +103,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc CHANGELOG README.txt
-%attr(755,root,root) %{_bindir}/*
+%attr(755,root,root) %{_bindir}/rubberband
 
 %files libs
 %defattr(644,root,root,755)
@@ -103,21 +112,21 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %defattr(644,root,root,755)
-%{_libdir}/librubberband.so
+%attr(755,root,root) %{_libdir}/librubberband.so
 %{_includedir}/%{name}
 %{_pkgconfigdir}/rubberband.pc
 
 %files static
 %defattr(644,root,root,755)
-%{_libdir}/lib*.a
+%{_libdir}/librubberband.a
 
 %files -n ladspa-rubberband-plugins
 %defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/ladspa/ladspa-rubberband.so
 %{_libdir}/ladspa/ladspa-rubberband.cat
-%{_libdir}/ladspa/ladspa-rubberband.so
 %{_datadir}/ladspa/rdf/ladspa-rubberband.rdf
 
 %files -n vamp-plugins-rubberband
 %defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/vamp/vamp-rubberband.so
 %{_libdir}/vamp/vamp-rubberband.cat
-%{_libdir}/vamp/vamp-rubberband.so
