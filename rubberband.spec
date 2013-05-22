@@ -1,14 +1,12 @@
-# TODO:
-#	- missing pl descriptions and summaries
-#
 Summary:	An audio time-stretching and pitch-shifting library and utility program
+Summary(pl.UTF-8):	Biblioteka i narzędzie do rozciagania i harmonizowania dźwięku
 Name:		rubberband
-Version:	1.4
-Release:	0.2
+Version:	1.8.1
+Release:	1
 License:	GPL v2
 Group:		Applications/Sound
-Source0:	http://www.breakfastquay.com/rubberband/files/%{name}-%{version}p1.tar.bz2
-# Source0-md5:	edf022f40d4d787313a9a102a3336126
+Source0:	http://code.breakfastquay.com/attachments/download/34/%{name}-%{version}.tar.bz2
+# Source0-md5:	6c2b4e18a714bcc297d0db81a10f9348
 URL:		http://www.breakfastquay.com/rubberband/
 BuildRequires:	fftw3-devel
 BuildRequires:	ladspa-devel
@@ -24,6 +22,11 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 Rubber Band is a library and utility program that permits you to
 change the tempo and pitch of an audio recording independently of one
 another.
+
+%description -l pl.UTF-8
+Rubber Band to biblioteka i program narzędziowy, który pozwala ci na
+zmianę tempa i wysokości tonu nagrywanego dźwięku niezaleźnie od
+innego.
 
 %package libs
 Summary:	rubberband library
