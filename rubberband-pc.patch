@@ -1,0 +1,21 @@
+--- rubberband-1.8.1/rubberband.pc.in.orig	2012-10-28 11:30:09.000000000 +0100
++++ rubberband-1.8.1/rubberband.pc.in	2016-02-21 21:56:55.376483312 +0100
+@@ -1,6 +1,6 @@
+ prefix=%PREFIX%
+ exec_prefix=${prefix}
+-libdir=${exec_prefix}/lib
++libdir=%LIBDIR%
+ includedir=${prefix}/include
+ 
+ Name: rubberband
+--- rubberband-1.8.1/Makefile.in.orig	2012-10-28 11:30:09.000000000 +0100
++++ rubberband-1.8.1/Makefile.in	2016-02-21 21:57:23.866482117 +0100
+@@ -158,7 +158,7 @@
+ 	cp $(LADSPA_TARGET) $(DESTDIR)$(INSTALL_LADSPADIR)
+ 	cp ladspa/ladspa-rubberband.cat $(DESTDIR)$(INSTALL_LADSPADIR)
+ 	cp ladspa/ladspa-rubberband.rdf $(DESTDIR)$(INSTALL_LRDFDIR)
+-	sed "s,%PREFIX%,@prefix@," rubberband.pc.in \
++	sed "s,%PREFIX%,@prefix@,;s,%LIBDIR%,@libdir@," rubberband.pc.in \
+ 	  > $(DESTDIR)$(INSTALL_PKGDIR)/rubberband.pc
+ 
+ clean:

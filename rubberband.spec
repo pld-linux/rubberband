@@ -1,19 +1,20 @@
 Summary:	An audio time-stretching and pitch-shifting library and utility program
-Summary(pl.UTF-8):	Biblioteka i narzędzie do rozciagania i harmonizowania dźwięku
+Summary(pl.UTF-8):	Biblioteka i narzędzie do rozciągania i harmonizowania dźwięku
 Name:		rubberband
 Version:	1.8.1
-Release:	1
-License:	GPL v2
+Release:	2
+License:	GPL v2+
 Group:		Applications/Sound
 Source0:	http://code.breakfastquay.com/attachments/download/34/%{name}-%{version}.tar.bz2
 # Source0-md5:	6c2b4e18a714bcc297d0db81a10f9348
+Patch0:		%{name}-pc.patch
 URL:		http://www.breakfastquay.com/rubberband/
-BuildRequires:	fftw3-devel
+BuildRequires:	fftw3-devel >= 3
 BuildRequires:	ladspa-devel
 BuildRequires:	libsamplerate-devel
 BuildRequires:	libsndfile-devel
 BuildRequires:	libstdc++-devel
-BuildRequires:	pkg-config
+BuildRequires:	pkgconfig
 BuildRequires:	vamp-devel
 Requires:	%{name}-libs = %{version}-%{release}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -24,20 +25,19 @@ change the tempo and pitch of an audio recording independently of one
 another.
 
 %description -l pl.UTF-8
-Rubber Band to biblioteka i program narzędziowy, który pozwala ci na
-zmianę tempa i wysokości tonu nagrywanego dźwięku niezaleźnie od
-innego.
+Rubber Band to biblioteka i program narzędziowy, który pozwala na
+zmianę tempa i wysokości tonu nagrywanego dźwięku niezależnie.
 
 %package libs
-Summary:	rubberband library
-Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki rubberband
+Summary:	Shared rubberband library
+Summary(pl.UTF-8):	Biblioteka współdzielona rubberband
 Group:		Libraries
 
 %description libs
-rubberband library.
+Shared rubberband library.
 
 %description libs -l pl.UTF-8
-Biblioteka rubberband.
+Biblioteka współdzielona rubberband.
 
 %package devel
 Summary:	Header files for rubberband library
@@ -64,21 +64,32 @@ Static rubberband library.
 Statyczna biblioteka rubberband.
 
 %package -n ladspa-rubberband-plugins
-Summary:	rubberband ladspa plugin
+Summary:	rubberband LADSPA plugin
+Summary(pl.UTF-8):	Wtyczka LADSPA rubberband
 Group:		Applications/Sound
+Requires:	ladspa-common
 
 %description -n ladspa-rubberband-plugins
-rubberband ladspa plugin.
+rubberband LADSPA plugin.
+
+%description -n ladspa-rubberband-plugins -l pl.UTF-8
+Wtyczka LADSPA rubberband.
 
 %package -n vamp-plugins-rubberband
-Summary:	rubberband vamp plugin
+Summary:	rubberband Vamp plugin
+Summary(pl.UTF-8):	Wtyczka Vamp rubberband
 Group:		Applications/Sound
+Requires:	vamp
 
 %description -n vamp-plugins-rubberband
-rubberband vamp plugin.
+rubberband Vamp plugin.
+
+%description -n vamp-plugins-rubberband -l pl.UTF-8
+Wtyczka Vamp rubberband.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 %configure
