@@ -1,15 +1,21 @@
+#
+# Conditional build:
+%bcond_without	java	# JNI library
+
 Summary:	An audio time-stretching and pitch-shifting library and utility program
 Summary(pl.UTF-8):	Biblioteka i narzędzie do rozciągania i harmonizowania dźwięku
 Name:		rubberband
-Version:	1.8.1
-Release:	2
+Version:	1.8.2
+Release:	1
 License:	GPL v2+
 Group:		Applications/Sound
-Source0:	http://code.breakfastquay.com/attachments/download/34/%{name}-%{version}.tar.bz2
-# Source0-md5:	6c2b4e18a714bcc297d0db81a10f9348
+Source0:	https://breakfastquay.com/files/releases/%{name}-%{version}.tar.bz2
+# Source0-md5:	db0ecb4f1a647bdaf7e43ef2ca2f7883
 Patch0:		%{name}-pc.patch
+Patch1:		%{name}-jni.patch
 URL:		http://www.breakfastquay.com/rubberband/
 BuildRequires:	fftw3-devel >= 3
+%{?with_jni:BuildRequires:	jdk}
 BuildRequires:	ladspa-devel
 BuildRequires:	libsamplerate-devel
 BuildRequires:	libsndfile-devel
@@ -63,6 +69,18 @@ Static rubberband library.
 %description static -l pl.UTF-8
 Statyczna biblioteka rubberband.
 
+%package -n java-rubberband
+Summary:	Java JNI interface for rubberband
+Summary(pl.UTF-8):	Interfejs Javy JNI do rubberband
+Group:		Libraries/Java
+Requires:	jre
+
+%description -n java-rubberband
+Java JNI interface for rubberband.
+
+%description -n java-rubberband -l pl.UTF-8
+Interfejs Javy JNI do rubberband.
+
 %package -n ladspa-rubberband-plugins
 Summary:	rubberband LADSPA plugin
 Summary(pl.UTF-8):	Wtyczka LADSPA rubberband
@@ -90,10 +108,11 @@ Wtyczka Vamp rubberband.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 %configure
-%{__make} \
+%{__make} all %{?with_java:jni} \
 	INSTALL_LIBDIR="%{_libdir}" \
 	INSTALL_VAMPDIR="%{_libdir}/vamp" \
 	INSTALL_LADSPADIR="%{_libdir}/ladspa"
@@ -108,11 +127,19 @@ rm -rf $RPM_BUILD_ROOT
 	INSTALL_LADSPADIR="%{_libdir}/ladspa" \
 	INSTALL_PKGDIR="%{_pkgconfigdir}"
 
+%if %{with java}
+install -d $RPM_BUILD_ROOT%{_javadir}
+cp -p lib/rubberband.jar $RPM_BUILD_ROOT%{_javadir}
+%endif
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %post	libs -p /sbin/ldconfig
 %postun	libs -p /sbin/ldconfig
+
+%post	-n java-rubberband -p /sbin/ldconfig
+%postun	-n java-rubberband -p /sbin/ldconfig
 
 %files
 %defattr(644,root,root,755)
@@ -133,6 +160,13 @@ rm -rf $RPM_BUILD_ROOT
 %files static
 %defattr(644,root,root,755)
 %{_libdir}/librubberband.a
+
+%if %{with java}
+%files -n java-rubberband
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/librubberband-jni.so
+%{_javadir}/rubberband.jar
+%endif
 
 %files -n ladspa-rubberband-plugins
 %defattr(644,root,root,755)
