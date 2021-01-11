@@ -8,14 +8,14 @@
  includedir=${prefix}/include
  
  Name: rubberband
---- rubberband-1.8.2/Makefile.in.orig	2019-04-26 05:48:08.645791967 +0200
-+++ rubberband-1.8.2/Makefile.in	2019-04-26 05:50:46.468270303 +0200
-@@ -189,7 +189,7 @@
- 	cp $(LADSPA_TARGET) $(DESTDIR)$(INSTALL_LADSPADIR)
- 	cp ladspa/ladspa-rubberband.cat $(DESTDIR)$(INSTALL_LADSPADIR)
- 	cp ladspa/ladspa-rubberband.rdf $(DESTDIR)$(INSTALL_LRDFDIR)
+--- rubberband-1.9.0/Makefile.in.orig	2021-01-11 21:36:48.112383422 +0100
++++ rubberband-1.9.0/Makefile.in	2021-01-11 21:37:39.002107728 +0100
+@@ -195,7 +195,7 @@
+ 	ln -s $(LIBNAME)$(DYNAMIC_EXTENSION).$(DYNAMIC_FULL_VERSION) $(DESTDIR)$(INSTALL_LIBDIR)/$(LIBNAME)$(DYNAMIC_EXTENSION).$(DYNAMIC_ABI_VERSION)
+ 	ln -s $(LIBNAME)$(DYNAMIC_EXTENSION).$(DYNAMIC_FULL_VERSION) $(DESTDIR)$(INSTALL_LIBDIR)/$(LIBNAME)$(DYNAMIC_EXTENSION)
+ 	test -f $(JNI_TARGET) && cp -f $(JNI_TARGET) $(DESTDIR)$(INSTALL_LIBDIR)/$(JNINAME)$(DYNAMIC_EXTENSION) || true
 -	sed "s,%PREFIX%,$(PREFIX)," rubberband.pc.in \
 +	sed "s,%PREFIX%,$(PREFIX),;s,%LIBDIR%,$(INSTALL_LIBDIR)," rubberband.pc.in \
  	  > $(DESTDIR)$(INSTALL_PKGDIR)/rubberband.pc
- 
- clean:
+ ifeq ($(WITH_PROGRAMS), yes)
+ 	$(MKDIR) -p $(DESTDIR)$(INSTALL_BINDIR)
