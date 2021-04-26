@@ -5,24 +5,27 @@
 Summary:	An audio time-stretching and pitch-shifting library and utility program
 Summary(pl.UTF-8):	Biblioteka i narzędzie do rozciągania i harmonizowania dźwięku
 Name:		rubberband
-Version:	1.9.0
+Version:	1.9.1
 Release:	1
 License:	GPL v2+
 Group:		Applications/Sound
 Source0:	https://breakfastquay.com/files/releases/%{name}-%{version}.tar.bz2
-# Source0-md5:	a203a53ef14f23bd4344f4b32514ed62
+# Source0-md5:	a70c507e7a3097612a4370d6dada79b4
 Patch0:		%{name}-pc.patch
-Patch1:		%{name}-jni.patch
 URL:		https://www.breakfastquay.com/rubberband/
-BuildRequires:	fftw3-devel >= 3
+BuildRequires:	fftw3-devel >= 3.0.0
 %{?with_jni:BuildRequires:	jdk}
 BuildRequires:	ladspa-devel
-BuildRequires:	libsamplerate-devel
-BuildRequires:	libsndfile-devel
-BuildRequires:	libstdc++-devel
+BuildRequires:	libsamplerate-devel >= 0.1.8
+BuildRequires:	libsndfile-devel >= 1.0.16
+BuildRequires:	libstdc++-devel >= 6:5
+BuildRequires:	meson >= 0.53.0
+BuildRequires:	ninja >= 1.5
 BuildRequires:	pkgconfig
-BuildRequires:	vamp-devel
+BuildRequires:	rpmbuild(macros) >= 1.736
+BuildRequires:	vamp-devel >= 2.9
 Requires:	%{name}-libs = %{version}-%{release}
+Requires:	libsndfile >= 1.0.16
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -38,6 +41,7 @@ zmianę tempa i wysokości tonu nagrywanego dźwięku niezależnie.
 Summary:	Shared rubberband library
 Summary(pl.UTF-8):	Biblioteka współdzielona rubberband
 Group:		Libraries
+Requires:	libsamplerate >= 0.1.8
 
 %description libs
 Shared rubberband library.
@@ -50,6 +54,7 @@ Summary:	Header files for rubberband library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki rubberband
 Group:		Development/Libraries
 Requires:	%{name}-libs = %{version}-%{release}
+Requires:	libsamplerate-devel >= 0.1.8
 
 %description devel
 Header files for rubberband library.
@@ -74,6 +79,7 @@ Summary:	Java JNI interface for rubberband
 Summary(pl.UTF-8):	Interfejs Javy JNI do rubberband
 Group:		Libraries/Java
 Requires:	jre
+Requires:	libsamplerate >= 0.1.8
 
 %description -n java-rubberband
 Java JNI interface for rubberband.
@@ -86,6 +92,7 @@ Summary:	rubberband LADSPA plugin
 Summary(pl.UTF-8):	Wtyczka LADSPA rubberband
 Group:		Applications/Sound
 Requires:	ladspa-common
+Requires:	libsamplerate >= 0.1.8
 
 %description -n ladspa-rubberband-plugins
 rubberband LADSPA plugin.
@@ -97,7 +104,8 @@ Wtyczka LADSPA rubberband.
 Summary:	rubberband Vamp plugin
 Summary(pl.UTF-8):	Wtyczka Vamp rubberband
 Group:		Applications/Sound
-Requires:	vamp
+Requires:	libsamplerate >= 0.1.8
+Requires:	vamp >= 2.9
 
 %description -n vamp-plugins-rubberband
 rubberband Vamp plugin.
@@ -108,28 +116,21 @@ Wtyczka Vamp rubberband.
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
 
 %build
-%configure
-%{__make} all %{?with_java:jni} \
-	INSTALL_LIBDIR="%{_libdir}" \
-	INSTALL_VAMPDIR="%{_libdir}/vamp" \
-	INSTALL_LADSPADIR="%{_libdir}/ladspa"
+%meson build \
+	%{?with_java:-Dextra_include_dirs="%{_jvmdir}/java/include,%{_jvmdir}/java/include/linux"}
+
+%ninja_build -C build
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%{__make} install \
-	DESTDIR=$RPM_BUILD_ROOT \
-	INSTALL_LIBDIR="%{_libdir}" \
-	INSTALL_VAMPDIR="%{_libdir}/vamp" \
-	INSTALL_LADSPADIR="%{_libdir}/ladspa" \
-	INSTALL_PKGDIR="%{_pkgconfigdir}"
+%ninja_install -C build
 
 %if %{with java}
 install -d $RPM_BUILD_ROOT%{_javadir}
-cp -p lib/rubberband.jar $RPM_BUILD_ROOT%{_javadir}
+cp -p build/rubberband.jar $RPM_BUILD_ROOT%{_javadir}
 %endif
 
 %clean
@@ -154,7 +155,7 @@ rm -rf $RPM_BUILD_ROOT
 %files devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/librubberband.so
-%{_includedir}/%{name}
+%{_includedir}/rubberband
 %{_pkgconfigdir}/rubberband.pc
 
 %files static
