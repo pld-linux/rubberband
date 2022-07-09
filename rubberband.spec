@@ -1,24 +1,27 @@
 #
 # Conditional build:
-%bcond_without	java	# JNI library
+%bcond_without	java		# JNI library
+%bcond_with	libsamplerate	# libsamplerate for resampling (default is builtin)
 
 Summary:	An audio time-stretching and pitch-shifting library and utility program
 Summary(pl.UTF-8):	Biblioteka i narzędzie do rozciągania i harmonizowania dźwięku
 Name:		rubberband
-Version:	1.9.2
+Version:	3.0.0
 Release:	1
 License:	GPL v2+
 Group:		Applications/Sound
 Source0:	https://breakfastquay.com/files/releases/%{name}-%{version}.tar.bz2
-# Source0-md5:	fb433216aff9c5e396052ce0f116c11e
+# Source0-md5:	30e220e8ca2202d52c58714793f93c23
 Patch0:		%{name}-pc.patch
+Patch1:		%{name}-update.patch
 URL:		https://www.breakfastquay.com/rubberband/
 BuildRequires:	fftw3-devel >= 3.0.0
 %{?with_jni:BuildRequires:	jdk}
 BuildRequires:	ladspa-devel
-BuildRequires:	libsamplerate-devel >= 0.1.8
+%{?with_libsamplerate:BuildRequires:	libsamplerate-devel >= 0.1.8}
 BuildRequires:	libsndfile-devel >= 1.0.16
 BuildRequires:	libstdc++-devel >= 6:5
+BuildRequires:	lv2-devel
 BuildRequires:	meson >= 0.53.0
 BuildRequires:	ninja >= 1.5
 BuildRequires:	pkgconfig
@@ -41,7 +44,7 @@ zmianę tempa i wysokości tonu nagrywanego dźwięku niezależnie.
 Summary:	Shared rubberband library
 Summary(pl.UTF-8):	Biblioteka współdzielona rubberband
 Group:		Libraries
-Requires:	libsamplerate >= 0.1.8
+%{?with_libsamplerate:Requires:	libsamplerate >= 0.1.8}
 
 %description libs
 Shared rubberband library.
@@ -54,7 +57,7 @@ Summary:	Header files for rubberband library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki rubberband
 Group:		Development/Libraries
 Requires:	%{name}-libs = %{version}-%{release}
-Requires:	libsamplerate-devel >= 0.1.8
+%{?with_libsamplerate:Requires:	libsamplerate-devel >= 0.1.8}
 
 %description devel
 Header files for rubberband library.
@@ -79,7 +82,7 @@ Summary:	Java JNI interface for rubberband
 Summary(pl.UTF-8):	Interfejs Javy JNI do rubberband
 Group:		Libraries/Java
 Requires:	jre
-Requires:	libsamplerate >= 0.1.8
+%{?with_libsamplerate:Requires:	libsamplerate >= 0.1.8}
 
 %description -n java-rubberband
 Java JNI interface for rubberband.
@@ -92,7 +95,7 @@ Summary:	rubberband LADSPA plugin
 Summary(pl.UTF-8):	Wtyczka LADSPA rubberband
 Group:		Applications/Sound
 Requires:	ladspa-common
-Requires:	libsamplerate >= 0.1.8
+%{?with_libsamplerate:Requires:	libsamplerate >= 0.1.8}
 
 %description -n ladspa-rubberband-plugins
 rubberband LADSPA plugin.
@@ -100,11 +103,24 @@ rubberband LADSPA plugin.
 %description -n ladspa-rubberband-plugins -l pl.UTF-8
 Wtyczka LADSPA rubberband.
 
+%package -n lv2-rubberband
+Summary:	rubberband LV2 plugin
+Summary(pl.UTF-8):	Wtyczka LV2 rubberband
+Group:		Applications/Sound
+Requires:	lv2
+%{?with_libsamplerate:Requires:	libsamplerate >= 0.1.8}
+
+%description -n lv2-rubberband
+rubberband LV2 plugin.
+
+%description -n lv2-rubberband -l pl.UTF-8
+Wtyczka LV2 rubberband.
+
 %package -n vamp-plugins-rubberband
 Summary:	rubberband Vamp plugin
 Summary(pl.UTF-8):	Wtyczka Vamp rubberband
 Group:		Applications/Sound
-Requires:	libsamplerate >= 0.1.8
+%{?with_libsamplerate:Requires:	libsamplerate >= 0.1.8}
 Requires:	vamp >= 2.9
 
 %description -n vamp-plugins-rubberband
@@ -116,10 +132,12 @@ Wtyczka Vamp rubberband.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 %meson build \
-	%{?with_java:-Dextra_include_dirs="%{_jvmdir}/java/include,%{_jvmdir}/java/include/linux"}
+	%{?with_java:-Dextra_include_dirs="%{_jvmdir}/java/include,%{_jvmdir}/java/include/linux"} \
+	%{?with_libsamplerate:-Dresampler=libsamplerate}
 
 %ninja_build -C build
 
@@ -146,6 +164,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc CHANGELOG README.md
 %attr(755,root,root) %{_bindir}/rubberband
+%attr(755,root,root) %{_bindir}/rubberband-r3
 
 %files libs
 %defattr(644,root,root,755)
@@ -174,6 +193,13 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/ladspa/ladspa-rubberband.so
 %{_libdir}/ladspa/ladspa-rubberband.cat
 %{_datadir}/ladspa/rdf/ladspa-rubberband.rdf
+
+%files -n lv2-rubberband
+%defattr(644,root,root,755)
+%dir %{_libdir}/lv2/rubberband.lv2
+%attr(755,root,root) %{_libdir}/lv2/rubberband.lv2/lv2-rubberband.so
+%{_libdir}/lv2/rubberband.lv2/lv2-rubberband.ttl
+%{_libdir}/lv2/rubberband.lv2/manifest.ttl
 
 %files -n vamp-plugins-rubberband
 %defattr(644,root,root,755)
