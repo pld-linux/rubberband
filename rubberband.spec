@@ -1,23 +1,26 @@
 #
 # Conditional build:
 %bcond_without	java		# JNI library
+%bcond_with	fftw3		# fftw3 for FFT (default is builtin)
 %bcond_with	libsamplerate	# libsamplerate for resampling (default is builtin)
 
 Summary:	An audio time-stretching and pitch-shifting library and utility program
 Summary(pl.UTF-8):	Biblioteka i narzędzie do rozciągania i harmonizowania dźwięku
 Name:		rubberband
-Version:	3.0.0
+Version:	3.2.1
 Release:	1
 License:	GPL v2+
 Group:		Applications/Sound
 Source0:	https://breakfastquay.com/files/releases/%{name}-%{version}.tar.bz2
-# Source0-md5:	30e220e8ca2202d52c58714793f93c23
+# Source0-md5:	722f5687d5e020874b865d87c41e03e9
 Patch0:		%{name}-pc.patch
 Patch1:		%{name}-update.patch
 URL:		https://www.breakfastquay.com/rubberband/
-BuildRequires:	fftw3-devel >= 3.0.0
+# also kissfft, sleef >= 3.3.0, ipp possible
+%{?with_fftw3:BuildRequires:	fftw3-devel >= 3.0.0}
 %{?with_jni:BuildRequires:	jdk}
 BuildRequires:	ladspa-devel
+# also speexdsp >= 1.0.0 possible
 %{?with_libsamplerate:BuildRequires:	libsamplerate-devel >= 0.1.8}
 BuildRequires:	libsndfile-devel >= 1.0.16
 BuildRequires:	libstdc++-devel >= 6:5
@@ -135,8 +138,15 @@ Wtyczka Vamp rubberband.
 %patch1 -p1
 
 %build
+%if %{with java}
+# required for meson javac detection (at least meson 1.0.1 / openjdk8 combo)
+export CLASSPATH=.
+%endif
+
 %meson build \
 	%{?with_java:-Dextra_include_dirs="%{_jvmdir}/java/include,%{_jvmdir}/java/include/linux"} \
+	%{?with_fft:-Dfft=fftw} \
+	-Djni=%{__enabled_disabled java} \
 	%{?with_libsamplerate:-Dresampler=libsamplerate}
 
 %ninja_build -C build
