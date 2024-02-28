@@ -7,12 +7,12 @@
 Summary:	An audio time-stretching and pitch-shifting library and utility program
 Summary(pl.UTF-8):	Biblioteka i narzędzie do rozciągania i harmonizowania dźwięku
 Name:		rubberband
-Version:	3.2.1
+Version:	3.3.0
 Release:	1
 License:	GPL v2+
 Group:		Applications/Sound
 Source0:	https://breakfastquay.com/files/releases/%{name}-%{version}.tar.bz2
-# Source0-md5:	722f5687d5e020874b865d87c41e03e9
+# Source0-md5:	b0ba4fb331e694a07848896f4845e8ea
 Patch0:		%{name}-pc.patch
 Patch1:		%{name}-update.patch
 URL:		https://www.breakfastquay.com/rubberband/
