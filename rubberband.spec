@@ -143,18 +143,18 @@ Wtyczka Vamp rubberband.
 export CLASSPATH=.
 %endif
 
-%meson build \
+%meson \
 	%{?with_java:-Dextra_include_dirs="%{_jvmdir}/java/include,%{_jvmdir}/java/include/linux"} \
 	%{?with_fft:-Dfft=fftw} \
 	-Djni=%{__enabled_disabled java} \
 	%{?with_libsamplerate:-Dresampler=libsamplerate}
 
-%ninja_build -C build
+%meson_build
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%ninja_install -C build
+%meson_install
 
 %if %{with java}
 install -d $RPM_BUILD_ROOT%{_javadir}
