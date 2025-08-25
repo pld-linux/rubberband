@@ -7,20 +7,20 @@
 Summary:	An audio time-stretching and pitch-shifting library and utility program
 Summary(pl.UTF-8):	Biblioteka i narzędzie do rozciągania i harmonizowania dźwięku
 Name:		rubberband
-Version:	3.3.0
+Version:	4.0.0
 Release:	1
 License:	GPL v2+
 Group:		Applications/Sound
 Source0:	https://breakfastquay.com/files/releases/%{name}-%{version}.tar.bz2
-# Source0-md5:	b0ba4fb331e694a07848896f4845e8ea
+# Source0-md5:	93bf3159eb91048e76eba35cf1bf766f
 Patch0:		%{name}-pc.patch
 Patch1:		%{name}-update.patch
 URL:		https://www.breakfastquay.com/rubberband/
-# also kissfft, sleef >= 3.3.0, ipp possible
+# also kissfft, sleefdft >= 3.0.0 + sleef >= 3.3.0, ipp possible
 %{?with_fftw3:BuildRequires:	fftw3-devel >= 3.0.0}
 %{?with_jni:BuildRequires:	jdk}
 BuildRequires:	ladspa-devel
-# also speexdsp >= 1.0.0 possible
+# also speexdsp >= 1.0.0, ipp possible
 %{?with_libsamplerate:BuildRequires:	libsamplerate-devel >= 0.1.8}
 BuildRequires:	libsndfile-devel >= 1.0.16
 BuildRequires:	libstdc++-devel >= 6:5
@@ -144,10 +144,15 @@ export CLASSPATH=.
 %endif
 
 %meson \
+	-Dcmdline=enabled \
 	%{?with_java:-Dextra_include_dirs="%{_jvmdir}/java/include,%{_jvmdir}/java/include/linux"} \
 	%{?with_fft:-Dfft=fftw} \
 	-Djni=%{__enabled_disabled java} \
-	%{?with_libsamplerate:-Dresampler=libsamplerate}
+	-Dladspa=enabled \
+	-Dlv2=enabled \
+	%{?with_libsamplerate:-Dresampler=libsamplerate} \
+	-Dtests=disabled \
+	-Dvamp=enabled
 
 %meson_build
 
@@ -179,11 +184,11 @@ rm -rf $RPM_BUILD_ROOT
 %files libs
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/librubberband.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/librubberband.so.2
+%ghost %{_libdir}/librubberband.so.3
 
 %files devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/librubberband.so
+%{_libdir}/librubberband.so
 %{_includedir}/rubberband
 %{_pkgconfigdir}/rubberband.pc
 
