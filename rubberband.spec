@@ -28,7 +28,7 @@ BuildRequires:	lv2-devel
 BuildRequires:	meson >= 0.53.0
 BuildRequires:	ninja >= 1.5
 BuildRequires:	pkgconfig
-BuildRequires:	rpmbuild(macros) >= 1.736
+BuildRequires:	rpmbuild(macros) >= 2.042
 BuildRequires:	vamp-devel >= 2.9
 Requires:	%{name}-libs = %{version}-%{release}
 Requires:	libsndfile >= 1.0.16
